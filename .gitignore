@@ -11,3 +11,9 @@ venv/
 import.sh
 
 .DS_Store
+
+scratch-paper.md 
+scratch-paper*
+.env*
+pvt
+pvt*
