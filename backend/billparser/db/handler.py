@@ -13,6 +13,12 @@ from billparser.utils.citation import resolve_citations
 from billparser.db.models import USCSection
 from billparser.db.models import *
 
+#username = os.environ.get("db_user", "parser")
+#password = os.environ.get("db_pass", "parser")
+#table = os.environ.get("db_table", "us_code_2023")
+#db_host = os.environ.get("db_host", "localhost:5432")
+
+
 username = os.environ.get("db_user", "bills")
 password = os.environ.get("db_pass", "bills")
 table = os.environ.get("db_table", "uscode")
