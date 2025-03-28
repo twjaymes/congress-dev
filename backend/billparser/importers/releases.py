@@ -10,6 +10,9 @@ from sqlalchemy import func
 from billparser.db.handler import import_title, get_number, Session
 from billparser.db.models import USCRelease, Version
 
+from lxml import html
+import re
+
 THREADS = int(os.environ.get("PARSE_THREADS", -1))
 DOWNLOAD_BASE = "https://uscode.house.gov/download/{}"
 RELEASE_POINTS = "https://uscode.house.gov/download/priorreleasepoints.htm"
