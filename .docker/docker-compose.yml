@@ -81,8 +81,12 @@ services:
     build:
       context: ../hillstack
       dockerfile: .docker/Dockerfile
+      args:
+        DATABASE_URL: postgresql://parser:parser@congress_postgres:5432/us_code_2025
+        NEXT_PUBLIC_APP_URL: http://localhost:3001
     environment:
     - DATABASE_URL=postgresql://parser:parser@congress_postgres:5432/us_code_2025
+    - NEXT_PUBLIC_APP_URL=http://localhost:3001
     ports:
     - "3001:3001"
     depends_on:
@@ -102,9 +106,24 @@ services:
       - postgres-volume:/var/lib/postgresql/data
     networks:
       parser:
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: congress_pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: user@example.com
+      PGADMIN_DEFAULT_PASSWORD: your_admin_password
+      # Optional: Disable master password for local dev
+      PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED: 'False'
+    ports:
+      - "5050:80"
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    networks:
+      parser:
 networks:
   parser:
     external:
       name: docker_parser
 volumes:
   postgres-volume:
+  pgadmin_data:
