@@ -39,6 +39,8 @@ docker exec -it docker_parser_api bash
 python3 -m billparser.importers.releases
 python3 -m billparser.importers.bills
 
+
+docker exec -it congress_parser_api bash -c "python3 -m billparser.importers.releases && python3 -m billparser.importers.bills"
 ```
 
 A semi up to date postgres dump is available for [download](https://files.congress.dev/congress_beta.backup).

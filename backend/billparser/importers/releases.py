@@ -1,8 +1,9 @@
 import argparse
-import html
 import os
+import re
 import zipfile
 from datetime import datetime
+from lxml import html
 from billparser.importers.bills import download_path
 from joblib import Parallel, delayed
 import requests

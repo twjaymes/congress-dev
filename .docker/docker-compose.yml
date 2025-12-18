@@ -101,7 +101,7 @@ services:
     environment:
       POSTGRES_PASSWORD: parser
       POSTGRES_USER: parser
-      POSTGRES_DB: us_code_2023
+      POSTGRES_DB: us_code_2025
     volumes:
       - postgres-volume:/var/lib/postgresql/data
     networks:
@@ -122,8 +122,7 @@ services:
       parser:
 networks:
   parser:
-    external:
-      name: docker_parser
+    driver: bridge
 volumes:
   postgres-volume:
   pgadmin_data:

@@ -13,6 +13,7 @@ from congress_fastapi.routes.user import router as user_router
 from congress_fastapi.routes.stats import router as stats_router
 from congress_fastapi.routes.uscode import router as uscode_router
 from congress_fastapi.routes.committees import router as committees_router
+from congress_fastapi.routes.congress import router as congress_router
 from congress_fastapi.utils.limiter import limiter
 from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
@@ -48,6 +49,7 @@ async def log_exceptions_middleware(request: Request, call_next):
         raise e
 
 
+app.include_router(congress_router)
 app.include_router(members_router)
 app.include_router(legislation_router)
 app.include_router(legislation_version_router)
