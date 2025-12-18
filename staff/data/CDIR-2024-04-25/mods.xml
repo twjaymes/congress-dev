@@ -1,0 +1,79 @@
+<mods xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.loc.gov/mods/v3" version="3.3" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-3.xsd" ID="P0b002ee1cec1089b">
+    <name type="corporate">
+         <namePart>United States Government Publishing Office</namePart>
+         <role>
+              <roleTerm authority="marcrelator" type="text">publisher</roleTerm>
+              <roleTerm authority="marcrelator" type="code">pbl</roleTerm>
+        </role>
+         <role>
+              <roleTerm authority="marcrelator" type="text">distributor</roleTerm>
+              <roleTerm authority="marcrelator" type="code">dst</roleTerm>
+        </role>
+    </name>
+    <name type="corporate">
+         <namePart>United States</namePart>
+         <namePart>Congress</namePart>
+         <namePart>Joint Committee on Printing</namePart>
+         <role>
+              <roleTerm authority="marcrelator" type="text">author</roleTerm>
+              <roleTerm authority="marcrelator" type="code">aut</roleTerm>
+        </role>
+         <description>Government Organization</description>
+    </name>
+    <typeOfResource>text</typeOfResource>
+    <genre authority="marcgt">government publication</genre>
+    <language>
+         <languageTerm type="code" authority="iso639-2b">eng</languageTerm>
+    </language>
+    <extension>
+         <collectionCode>CDIR</collectionCode>
+         <category>Directories of Organizations and Officials</category>
+         <branch>legislative</branch>
+         <dateIngested>2024-12-18</dateIngested>
+    </extension>
+    <originInfo>
+         <publisher>U.S. Government Publishing Office</publisher>
+         <dateIssued encoding="w3cdtf">2024-04-25</dateIssued>
+         <issuance>continuing</issuance>
+         <frequency authority="marcfrequency">Biennial</frequency>
+    </originInfo>
+    <physicalDescription>
+         <note type="source content type">deposited</note>
+         <digitalOrigin>reformatted digital</digitalOrigin>
+         <extent>1490 digital object pages</extent>
+    </physicalDescription>
+    <classification authority="sudocs">Y 4.P 93/1:1/118</classification>
+    <identifier type="uri">https://www.govinfo.gov/app/details/CDIR-2024-04-25</identifier>
+    <identifier type="local">P0b002ee1cec1089b</identifier>
+    <identifier type="ILS system id">000631754</identifier>
+    <identifier type="former package identifier">CDIR-2024-04-25.pdf</identifier>
+    <recordInfo>
+         <recordContentSource authority="marcorg">DGPO</recordContentSource>
+         <recordCreationDate encoding="w3cdtf">2024-12-18</recordCreationDate>
+         <recordChangeDate encoding="w3cdtf">2025-11-03</recordChangeDate>
+         <recordIdentifier source="DGPO">CDIR-2024-04-25</recordIdentifier>
+         <recordOrigin>machine generated</recordOrigin>
+         <languageOfCataloging>
+              <languageTerm type="code" authority="iso639-2b">eng</languageTerm>
+        </languageOfCataloging>
+    </recordInfo>
+    <accessCondition type="GPO scope determination">fdlp</accessCondition>
+    <extension>
+         <docClass>CDIR</docClass>
+         <accessId>CDIR-2024-04-25</accessId>
+         <isCurrentEdition>true</isCurrentEdition>
+         <editionId>CDIR</editionId>
+         <isInterim>false</isInterim>
+         <congress>118</congress>
+         <closeDate>2024-04-25</closeDate>
+         <isDigitized>false</isDigitized>
+    </extension>
+    <titleInfo>
+         <title>Congressional Directory for the 118th Congress (2023-2024), April 25, 2024</title>
+    </titleInfo>
+    <location>
+         <url displayLabel="PDF rendition" access="raw object">https://www.govinfo.gov/content/pkg/CDIR-2024-04-25/pdf/CDIR-2024-04-25.pdf</url>
+         <url displayLabel="Text rendition" access="raw object">https://www.govinfo.gov/content/pkg/CDIR-2024-04-25/text/CDIR-2024-04-25.txt</url>
+    </location>
+    <identifier type="preferred citation">Cong. Dir. 118th Congress</identifier>
+</mods>

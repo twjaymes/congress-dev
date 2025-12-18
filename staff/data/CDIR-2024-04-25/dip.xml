@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?><mets xmlns="http://www.loc.gov/METS/" xmlns:utils="xalan://gov.gpo.fdsys.utils" xmlns:datetime="http://exslt.org/dates-and-times" xmlns:xalan="http://xml.apache.org/xalan" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xlink="http://www.w3.org/1999/xlink" xsi:schemaLocation="http://www.loc.gov/METS/ http://www.loc.gov/standards/mets/mets.xsd" ID="P0b002ee1cec1089b" LABEL="Congressional Directory for the 118th Congress (2023-2024), April 25, 2024" OBJID="CDIR-2024-04-25">
+<metsHdr CREATEDATE="2025-12-17T16:09:29Z" LASTMODDATE="2025-12-17T16:09:29Z">
+<agent ROLE="CREATOR" TYPE="ORGANIZATION">
+<name>United States Government Publishing Office</name>
+</agent>
+</metsHdr>
+<dmdSec ID="descriptive-metadata">
+<mdRef ID="descriptive-metadata-mods" MIMETYPE="text/xml" LOCTYPE="URL" xlink:href="file://mods.xml" MDTYPE="MODS"/>
+</dmdSec>
+<amdSec>
+<digiprovMD ID="provenance-metadata-premis">
+<mdRef MIMETYPE="text/xml" LOCTYPE="URL" xlink:href="file://premis.xml" MDTYPE="PREMIS"/>
+</digiprovMD>
+</amdSec>
+<fileSec><fileGrp USE="text/plain"><file ID="FID1" MIMETYPE="text/plain" SIZE="5912651">
+<FLocat LOCTYPE="URL" xlink:href="file://text/CDIR-2024-04-25.txt"/>
+<FLocat LOCTYPE="URL" xlink:href="https://www.govinfo.gov/content/pkg/CDIR-2024-04-25/text/CDIR-2024-04-25.txt"/>
+</file></fileGrp><fileGrp USE="application/pdf"><file ID="FID2" MIMETYPE="application/pdf" SIZE="11188358">
+<FLocat LOCTYPE="URL" xlink:href="file://pdf/CDIR-2024-04-25.pdf"/>
+<FLocat LOCTYPE="URL" xlink:href="https://www.govinfo.gov/content/pkg/CDIR-2024-04-25/pdf/CDIR-2024-04-25.pdf"/>
+</file></fileGrp></fileSec>
+<structMap>
+<div>
+<div ADMID="provenance-metadata-premis">
+<fptr FILEID="FID1"/>
+</div>
+<div ADMID="provenance-metadata-premis">
+<fptr FILEID="FID2"/>
+</div>
+</div>
+</structMap>
+</mets>
