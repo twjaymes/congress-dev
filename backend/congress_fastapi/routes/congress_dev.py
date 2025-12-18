@@ -1,11 +1,11 @@
 from typing import List
 from fastapi import APIRouter, HTTPException, status
 
-from congress_fastapi.handlers.congress import (
+from congress_fastapi.handlers.congress_dev import (
     get_all_congress_sessions,
     get_congress_session_by_number,
 )
-from congress_fastapi.models.congress import CongressMetadata
+from congress_fastapi.models.congress_dev import CongressMetadata
 from congress_fastapi.models.errors import Error
 
 router = APIRouter(tags=["Congress"])

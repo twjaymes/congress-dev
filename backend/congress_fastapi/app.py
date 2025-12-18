@@ -13,7 +13,7 @@ from congress_fastapi.routes.user import router as user_router
 from congress_fastapi.routes.stats import router as stats_router
 from congress_fastapi.routes.uscode import router as uscode_router
 from congress_fastapi.routes.committees import router as committees_router
-from congress_fastapi.routes.congress import router as congress_router
+from congress_fastapi.routes.congress_dev import router as congress_router
 from congress_fastapi.utils.limiter import limiter
 from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded

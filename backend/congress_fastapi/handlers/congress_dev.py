@@ -3,7 +3,7 @@ from sqlalchemy import select
 
 from billparser.db.models import Congress
 from congress_fastapi.db.postgres import get_database
-from congress_fastapi.models.congress import CongressMetadata
+from congress_fastapi.models.congress_dev import CongressMetadata
 
 
 async def get_all_congress_sessions() -> List[CongressMetadata]:
