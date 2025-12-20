@@ -5,6 +5,9 @@ frontend/yarn-error.log
 .docker/docker-compose.local.yml
 backend/venv/
 venv/
+.venv/
+**/venv/
+**/.venv/
 
 .resources/
 *.backup
@@ -15,3 +18,10 @@ venv/
 # Logs directory - track structure but ignore log files
 logs/*.log
 logs/**/*.log
+
+.dev/downloads
+
+.sources/
+
+logs
+
