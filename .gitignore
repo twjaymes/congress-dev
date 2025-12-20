@@ -4,10 +4,13 @@ frontend/yarn-error.log
 .vscode
 .docker/docker-compose.local.yml
 backend/venv/
-venv/
+.venv/
 
 .resources/
 *.backup
 import.sh
 
 .DS_Store
+
+logs/
+.dev/downloads/
