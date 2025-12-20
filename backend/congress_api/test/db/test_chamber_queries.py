@@ -13,7 +13,7 @@ from billparser.db.models import Congress, Legislation, LegislationVersion, Legi
 TEST_DB_USER = os.environ.get("db_user", "parser")
 TEST_DB_PASS = os.environ.get("db_pass", "parser")
 TEST_DB_HOST = os.environ.get("db_host", "localhost:5432")
-TEST_DB_TABLE = os.environ.get("db_table", "us_code_2025")
+TEST_DB_TABLE = os.environ.get("db_table", "us_code")
 TEST_DATABASE_URI = f"postgresql://{TEST_DB_USER}:{TEST_DB_PASS}@{TEST_DB_HOST}/{TEST_DB_TABLE}"
 
 DB_MOCKED = True

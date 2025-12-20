@@ -58,6 +58,16 @@ def extract_sponsors_from_api(congress, bill_obj, legislation_id, session) -> Li
 
             bioguide_id = sponsors[0].get('bioguideId')
             if bioguide_id is not None:
+                # auto-edits-001: Check if legislator exists before creating sponsorship
+                # Error: ForeignKeyViolation on legislation_sponsorship_legislator_bioguide_id_fkey
+                # Some bills reference legislators not present in bioguide database (e.g., S001176)
+                # Skip sponsorships for missing legislators instead of failing
+                from billparser.db.models import Legislator
+                legislator_exists = session.query(Legislator).filter_by(bioguide_id=bioguide_id).first()
+                if legislator_exists is None:
+                    logging.warning(f"Skipping sponsor with bioguide_id={bioguide_id} - not found in legislator table")
+                    return []
+                
                 new_sponsor = LegislationSponsorship(
                     legislator_bioguide_id=bioguide_id,
                     legislation_id=legislation_id,

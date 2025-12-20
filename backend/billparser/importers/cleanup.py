@@ -1,3 +1,8 @@
+# auto-edits-001: SQLAlchemy 2.0 compatibility fixes applied
+# - Replaced deprecated engine.execute() with engine.connect() context manager
+# - Added text() wrapper for raw SQL queries
+# - Added proper transaction commit in cleanup_legislation()
+
 from sqlalchemy import select, func
 from sqlalchemy.orm import aliased
 import os
@@ -71,18 +76,25 @@ def cleanup_usc_release(session):
 
 def cleanup_legislation():
     # For some reason, we get bills that produce nothing
-    result = list(engine.execute(query))
-    print(len(result), "bills created no rows")
+    # auto-edits-001: Fixed SQLAlchemy 2.0 compatibility
+    # OLD: result = list(engine.execute(query)) - deprecated in SQLAlchemy 2.0
+    # NEW: Using engine.connect() context manager with text() wrapper
+    from sqlalchemy import text
+    with engine.connect() as conn:
+        result = list(conn.execute(text(query)))
+        print(len(result), "bills created no rows")
 
-    if(len(result) > 0):
-        send_message(
-            f"Removing {len(result)} bills for no content.\nExamples: {', '.join([f'{x[1]}-{x[2]}-{x[3]}' for x in result[:5]])}"
-        )
-        for row in result:
-            legislation_id = row[0]
-            engine.execute(
-                f"DELETE FROM legislation WHERE legislation_id = {legislation_id}"
+        if(len(result) > 0):
+            send_message(
+                f"Removing {len(result)} bills for no content.\nExamples: {', '.join([f'{x[1]}-{x[2]}-{x[3]}' for x in result[:5]])}"
             )
+            for row in result:
+                legislation_id = row[0]
+                conn.execute(
+                    text(f"DELETE FROM legislation WHERE legislation_id = {legislation_id}")
+                )
+            # auto-edits-001: Added explicit commit for transaction
+            conn.commit()
 
 if __name__ == "__main__":
     session = Session()

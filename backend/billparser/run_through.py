@@ -1,3 +1,7 @@
+# auto-edits-001: Fixed IndexError in find_or_create_bill() function
+# - Added check for empty USCRelease query result before accessing index [0]
+# - Allows bills to be imported before US Code releases (import order dependency)
+
 from collections import defaultdict
 import os
 import re
@@ -117,7 +121,14 @@ def find_or_create_bill(bill_obj: dict, title: str, session: "SQLAlchemy.session
     release_point = (
         session.query(USCRelease).order_by(desc(USCRelease.created_at)).limit(1).all()
     )
-    new_version = Version(base_id=release_point[0].version_id)
+    # auto-edits-001: Handle case when no USC release exists yet (bills imported before USC)
+    # Import order: Bills (step 1) -> US Code Releases (step 5)
+    # OLD: new_version = Version(base_id=release_point[0].version_id) - raised IndexError
+    # NEW: Check if release_point list is empty before accessing index [0]
+    if len(release_point) > 0:
+        new_version = Version(base_id=release_point[0].version_id)
+    else:
+        new_version = Version(base_id=None)
     session.add(new_version)
     session.commit()
     existing_bill = (

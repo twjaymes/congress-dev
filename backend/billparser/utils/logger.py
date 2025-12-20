@@ -81,6 +81,13 @@ class LogContext:
 
 def initialize_logger():
     print("Initialize")
+    import os
+    
+    # Ensure logs directory exists
+    log_dir = os.path.join(os.path.dirname(__file__), '..', '..', '..', 'logs')
+    os.makedirs(log_dir, exist_ok=True)
+    log_file = os.path.join(log_dir, 'billparser.log')
+    
     context_data = _LogExtraData()
     LogContext._global_data = context_data
     logging.config.dictConfig(
@@ -96,8 +103,14 @@ def initialize_logger():
                 }
             },
             "handlers": {
-                "json": {"class": "logging.StreamHandler", "formatter": "json"}
+                "console": {"class": "logging.StreamHandler", "formatter": "json"},
+                "file": {
+                    "class": "logging.FileHandler",
+                    "filename": log_file,
+                    "formatter": "json",
+                    "mode": "a"
+                }
             },
-            "loggers": {"": {"handlers": ["json"], "level": 20}},
+            "loggers": {"": {"handlers": ["console", "file"], "level": 20}},
         }
     )

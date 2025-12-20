@@ -137,7 +137,10 @@ class ResearchRecordItem(BaseModel):
     name: Optional[str] = None
     recordType: Optional[List[str]] = None
     description: Optional[str] = None
-    recordLocation: RecordLocation
+    # auto-edits-001: Made recordLocation optional to handle missing field in some bioguide records
+    # Error: pydantic_core._pydantic_core.ValidationError: Field required [type=missing]
+    # Some legislators have researchRecord entries without recordLocation field
+    recordLocation: Optional[RecordLocation] = None
     findingAid: Optional[bool] = None
 
 
@@ -147,14 +150,17 @@ class ImageItem(BaseModel):
 
 
 class NameHistoryItem(BaseModel):
-    familyName: str
-    givenName: str
-    middleName: str
-    duplicateName: bool
-    startDate: str
-    startCirca: bool
-    endDate: str
-    endCirca: bool
+    # auto-edits-001: Made all fields optional to handle incomplete nameHistory records
+    # Error: ValidationError: nameHistory.0.startDate/endDate Field required [type=missing]
+    # Some legislators have nameHistory entries with missing date fields
+    familyName: Optional[str] = None
+    givenName: Optional[str] = None
+    middleName: Optional[str] = None
+    duplicateName: Optional[bool] = None
+    startDate: Optional[str] = None
+    startCirca: Optional[bool] = None
+    endDate: Optional[str] = None
+    endCirca: Optional[bool] = None
 
 
 class BioGuideMember(BaseModel):

@@ -8,6 +8,10 @@ venv/
 
 .resources/
 *.backup
-import.sh
+#import.sh
 
 .DS_Store
+
+# Logs directory - track structure but ignore log files
+logs/*.log
+logs/**/*.log

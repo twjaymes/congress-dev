@@ -1,6 +1,6 @@
 from typing import List, Optional, Tuple
 
-from sqlalchemy import select, and_, or_, func, asc, desc
+from sqlalchemy import select, and_, or_, func, asc, desc, text
 
 from billparser.db.models import (
     Legislation,
@@ -44,9 +44,18 @@ async def get_members(
     if congress is not None and congress[0] != '':
         sessions = [int(c) for c in congress]
 
-    sort_order = asc(sort)
+    # Map sort string to actual column
+    sort_column_map = {
+        'first_name': Legislator.first_name,
+        'last_name': Legislator.last_name,
+        'party': Legislator.party,
+        'state': Legislator.state,
+    }
+    sort_column = sort_column_map.get(sort, Legislator.last_name)
+    
+    sort_order = asc(sort_column)
     if direction == "desc":
-        sort_order = desc(sort)
+        sort_order = desc(sort_column)
 
     query = select(*MemberSearchInfo.sqlalchemy_columns()).select_from(Legislator)
     if name:
@@ -171,3 +180,44 @@ async def get_member_sponsorships_by_bioguide_id(
     if len(result) == 0:
         return []
     return [LegislationSponsorshipInfo(**r) for r in result]
+
+
+async def search_members_fts(
+    query_string: str,
+    page: int = 1,
+    page_size: int = 20,
+) -> Tuple[List[MemberSearchInfo], int]:
+    """
+    Full-text search for members using PostgreSQL FTS.
+    Returns ranked results based on search relevance.
+    """
+    database = await get_database()
+    
+    # Build the FTS query with ranking
+    query = select(
+        *MemberSearchInfo.sqlalchemy_columns(),
+        func.ts_rank(
+            Legislator.search_vector,
+            func.plainto_tsquery('english', query_string)
+        ).label('rank')
+    ).select_from(Legislator).where(
+        Legislator.search_vector.op('@@')(
+            func.plainto_tsquery('english', query_string)
+        )
+    ).order_by(
+        desc('rank')
+    ).limit(page_size).offset((page - 1) * page_size)
+    
+    result = await database.fetch_all(query)
+    
+    # Get total count
+    count_query = select(
+        func.count(Legislator.legislator_id)
+    ).select_from(Legislator).where(
+        Legislator.search_vector.op('@@')(
+            func.plainto_tsquery('english', query_string)
+        )
+    )
+    count_result = await database.fetch_one(count_query)
+    
+    return [MemberSearchInfo(**dict(r)) for r in result], count_result[0]
