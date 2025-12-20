@@ -1,38 +1,47 @@
+# Bytecode
 **.pyc
+
+# Node modules
 **/node_modules
+
+# Frontend logs
 frontend/yarn-error.log
+
+# VS Code
 .vscode
+
+# Docker
 .docker/docker-compose.local.yml
 
-
-.resources/
-*.backup
-import.sh
-
-.DS_Store
-
-logs/
-.dev/
-venv/
+# Python virtual environments
+backend/venv/
 .venv/
+venv/
 **/venv/
 **/.venv/
 
+# Project resources
 .resources/
-*.backup
-#import.sh
+**/.resources/
 
+# Backup files
+*.backup
+
+# Scripts
+import.sh
+
+# macOS files
 .DS_Store
 
-# Logs directory - track structure but ignore log files
+# Logs
+logs/
 logs/*.log
 logs/**/*.log
 
-.dev/downloads
+# Local dev artifacts
+.dev/
+.dev/downloads/
 
+# Sources (project-specific)
 .sources/
 **/.sources/
-
-
-logs
-
