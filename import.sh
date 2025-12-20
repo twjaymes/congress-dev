@@ -2,90 +2,146 @@
 set -e
 set -o pipefail
 
-cd ~/projects/congress-dev/congress-dev/backend
-rm bills/*
+############################################################
+# Environment Setup
+############################################################
 
-cd ~/projects/congress-dev/congress-dev
-TABLE_NAME="us_code_2025"
+PROJECT_ROOT_DIR=~/projects/congress-dev/congress-dev
+DOCKER_DIR=${PROJECT_ROOT_DIR}/.docker
+DOCKER_COMPOSE_FILE_NAME=docker-compose.dev.yml
+DOCKER_PROJECT_NAME="congress-dev"
+CONGRESS_API_KEY=By7KBbvlbNsDfoBPLxVAaZj3hvm7aQOnwLOhxvOo
+DATABASE_NAME="us_code"
+DATABASE_PASS="parser"
+DATABASE_USER="parser"
+# host.docker.internal: Used inside Docker containers to reach host machine services (macOS/Windows)
+# localhost: Used on host machine to connect to services directly
+DATABASE_HOST="host.docker.internal"
+DATABASE_PORT="5432"
+TABLE_NAME="us_code"
+PARSE_THREADS=16
+DISCORD_WEBHOOK=https://discord.com/api/webhooks/817897502442913822/M-6FpliQvtba68dSnL6AqviGkRgSZb5Jan0Hte841WrIxmJiWFWoEN5caWSxahf0Ydha
 
-docker rm congress-bill-parser && true
+cd ${PROJECT_ROOT_DIR}/backend
+pwd
+# if bills/ directory is empty, remove contents, else continue
+if [ -d "bills" ] && [ "$(ls -A bills)" ]; then
+    echo "Bills directory exists and is not empty. Continuing with import."
+else
+    echo "Bills directory is empty or does not exist. Creating bills directory."
+    mkdir -p bills
+fi
 
-docker-compose -f .docker/docker-compose.yml build congress_parser_api
+cd ${PROJECT_ROOT_DIR}
 
-# Import bills first
-docker run --name congress-bill-parser --entrypoint "python3" \
- --env db_host=10.0.0.248 --env db_user=parser --env db_pass=parser \
-  --env CONGRESS_API_KEY=By7KBbvlbNsDfoBPLxVAaZj3hvm7aQOnwLOhxvOo \
- --env db_table=${TABLE_NAME} --env PARSE_THREADS=16 \
- --env DISCORD_WEBHOOK=https://discord.com/api/webhooks/817897502442913822/M-6FpliQvtba68dSnL6AqviGkRgSZb5Jan0Hte841WrIxmJiWFWoEN5caWSxahf0Ydha \
- -v ~/projects/congress-dev/congress-dev/backend/bills:/bills \
- congress_parser_api -m billparser.importers.bills
+# Clean Python bytecode cache to ensure updated code is used
+echo "Cleaning Python bytecode cache..."
+find ${PROJECT_ROOT_DIR}/backend -type d -name __pycache__ -exec rm -rf {} + 2>/dev/null || true
+find ${PROJECT_ROOT_DIR}/backend -type f -name "*.pyc" -delete 2>/dev/null || true
 
-docker rm congress-bill-parser && true
-# Run prompts
-docker run --name congress-bill-parser --entrypoint "python3" \
- --env db_host=10.0.0.248 --env db_user=parser --env db_pass=parser \
- --env db_table=${TABLE_NAME} \
- --env DISCORD_WEBHOOK=https://discord.com/api/webhooks/817897502442913822/M-6FpliQvtba68dSnL6AqviGkRgSZb5Jan0Hte841WrIxmJiWFWoEN5caWSxahf0Ydha \
- -v ~/projects/congress-dev/congress-dev/backend/bills:/bills \
- congress_parser_api -m billparser.importers.prompts
+echo "Building congress_parser_api image..."
+docker compose -p ${DOCKER_PROJECT_NAME} -f ${DOCKER_DIR}/${DOCKER_COMPOSE_FILE_NAME} build congress_parser_api
 
-docker run --name congress-bill-parser --entrypoint "python3" \
- --env db_host=10.0.0.248 --env db_user=parser --env db_pass=parser \
- --env db_table=${TABLE_NAME} \
- --env DISCORD_WEBHOOK=https://discord.com/api/webhooks/817897502442913822/M-6FpliQvtba68dSnL6AqviGkRgSZb5Jan0Hte841WrIxmJiWFWoEN5caWSxahf0Ydha \
- -v ~/projects/congress-dev/congress-dev/backend/bills:/bills \
- congress_parser_api -m billparser.importers.bioguide
-docker rm congress-bill-parser && true
-# Grab sponsors
-docker run --name congress-bill-parser --entrypoint "python3" \
- --env db_host=10.0.0.248 --env db_user=parser --env db_pass=parser \
- --env db_table=${TABLE_NAME} \
- --env CONGRESS_API_KEY=${CONGRESS_API_KEY} \
- --env DISCORD_WEBHOOK=https://discord.com/api/webhooks/817897502442913822/M-6FpliQvtba68dSnL6AqviGkRgSZb5Jan0Hte841WrIxmJiWFWoEN5caWSxahf0Ydha \
- -v ~/projects/congress-dev/congress-dev/backend/bills:/bills \
- congress_parser_api -m billparser.importers.sponsors
+echo ""
+echo "Starting import process..."
+echo ""
 
-docker run --name congress-bill-parser --entrypoint "python3" \
- --env db_host=10.0.0.248 --env db_user=parser --env db_pass=parser \
- --env db_table=${TABLE_NAME} \
- --env DISCORD_WEBHOOK=https://discord.com/api/webhooks/817897502442913822/M-6FpliQvtba68dSnL6AqviGkRgSZb5Jan0Hte841WrIxmJiWFWoEN5caWSxahf0Ydha \
- -v ~/projects/congress-dev/congress-dev/backend/bills:/bills \
- congress_parser_api -m billparser.importers.releases --release-point="https://uscode.house.gov/download/releasepoints/us/pl/118/209not159/xml_uscAll@118-209not159.zip"
-docker rm congress-bill-parser && true
-# Run action importer
-docker run --name congress-bill-parser --entrypoint "python3" \
- --env db_host=10.0.0.248 --env db_user=parser --env db_pass=parser \
- --env db_table=${TABLE_NAME} \
- --env CONGRESS_API_KEY=${CONGRESS_API_KEY} \
- --env DISCORD_WEBHOOK=https://discord.com/api/webhooks/817897502442913822/M-6FpliQvtba68dSnL6AqviGkRgSZb5Jan0Hte841WrIxmJiWFWoEN5caWSxahf0Ydha \
- -v ~/projects/congress-dev/congress-dev/backend/bills:/bills \
- congress_parser_api -m billparser.importers.actions
+# Helper function to run importers
+run_importer() {
+    local importer_name=$1
+    local extra_args=$2
+    
+    echo "==> Running ${importer_name} importer..."
+    docker compose -p ${DOCKER_PROJECT_NAME} -f ${DOCKER_DIR}/${DOCKER_COMPOSE_FILE_NAME} run --rm \
+        -e db_host=${DATABASE_HOST} \
+        -e db_user=${DATABASE_USER} \
+        -e db_pass=${DATABASE_PASS} \
+        -e db_table=${TABLE_NAME} \
+        -e CONGRESS_API_KEY=${CONGRESS_API_KEY} \
+        -e PARSE_THREADS=${PARSE_THREADS} \
+        -e DISCORD_WEBHOOK=${DISCORD_WEBHOOK} \
+        congress_parser_api -m billparser.importers.${importer_name} ${extra_args}
+    echo ""
+}
 
-docker rm congress-bill-parser && true
-# Run action importer
-docker run --name congress-bill-parser --entrypoint "python3" \
- --env db_host=10.0.0.248 --env db_user=parser --env db_pass=parser \
- --env db_table=${TABLE_NAME} \
- --env DISCORD_WEBHOOK=https://discord.com/api/webhooks/817897502442913822/M-6FpliQvtba68dSnL6AqviGkRgSZb5Jan0Hte841WrIxmJiWFWoEN5caWSxahf0Ydha \
- -v ~/projects/congress-dev/congress-dev/backend/bills:/bills \
- congress_parser_api -m billparser.importers.votes
+# Function to run specific importer based on name
+run_specific_importer() {
+    case "$1" in
+        bills)
+            run_importer "bills"
+            ;;
+        prompts)
+            run_importer "prompts"
+            ;;
+        bioguide)
+            run_importer "bioguide"
+            ;;
+        sponsors)
+            run_importer "sponsors"
+            ;;
+        releases)
+            run_importer "releases" '--release-point="https://uscode.house.gov/download/releasepoints/us/pl/118/209not159/xml_uscAll@118-209not159.zip"'
+            ;;
+        actions)
+            run_importer "actions"
+            ;;
+        votes)
+            run_importer "votes"
+            ;;
+        statuses)
+            run_importer "statuses"
+            ;;
+        cleanup)
+            run_importer "cleanup"
+            ;;
+        *)
+            echo "Unknown importer: $1"
+            echo "Available importers: bills, prompts, bioguide, sponsors, releases, actions, votes, statuses, cleanup"
+            exit 1
+            ;;
+    esac
+}
 
-docker rm congress-bill-parser && true
-# Run action importer
-docker run --name congress-bill-parser --entrypoint "python3" \
- --env db_host=10.0.0.248 --env db_user=parser --env db_pass=parser \
- --env db_table=${TABLE_NAME} \
- --env DISCORD_WEBHOOK=https://discord.com/api/webhooks/817897502442913822/M-6FpliQvtba68dSnL6AqviGkRgSZb5Jan0Hte841WrIxmJiWFWoEN5caWSxahf0Ydha \
- -v ~/projects/congress-dev/congress-dev/backend/bills:/bills \
- congress_parser_api -m billparser.importers.statuses
+# Check if specific importers were requested
+if [ $# -gt 0 ]; then
+    echo "Running specific importers: $@"
+    echo ""
+    for importer in "$@"; do
+        run_specific_importer "$importer"
+    done
+else
+    echo "Running all importers in sequence..."
+    echo ""
+    
+    # Import bills first
+    run_importer "bills"
 
-docker rm congress-bill-parser && true
+    # Run prompts
+    run_importer "prompts"
 
-docker run --name congress-bill-cleanup --entrypoint "python3" \
- --env db_host=10.0.0.248 --env db_user=parser --env db_pass=parser \
- --env db_table=${TABLE_NAME} --env PARSE_THREADS=16 \
- --env DISCORD_WEBHOOK=https://discord.com/api/webhooks/817897502442913822/M-6FpliQvtba68dSnL6AqviGkRgSZb5Jan0Hte841WrIxmJiWFWoEN5caWSxahf0Ydha \
-  congress_parser_api -m billparser.importers.cleanup
+    # Import bioguide
+    run_importer "bioguide"
 
-docker rm congress-bill-cleanup && true
+    # Grab sponsors
+    run_importer "sponsors"
+
+    # Import US Code releases
+    run_importer "releases" '--release-point="https://uscode.house.gov/download/releasepoints/us/pl/118/209not159/xml_uscAll@118-209not159.zip"'
+
+    # Run action importer
+    run_importer "actions"
+
+    # Import votes
+    run_importer "votes"
+
+    # Import statuses
+    run_importer "statuses"
+
+    # Run cleanup
+    run_importer "cleanup"
+fi
+
+echo ""
+echo "=========================================="
+echo "Import process complete!"
+echo "=========================================="

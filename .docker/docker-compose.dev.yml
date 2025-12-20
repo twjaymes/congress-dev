@@ -1,24 +1,42 @@
 version: '3'
 services:
   congress_parser_api:
+<<<<<<< HEAD
     image: congress_parser_api:latest
+=======
+>>>>>>> local/db
     container_name: congress_parser_api
     tty: true
     stdin_open: true
     environment:
+<<<<<<< HEAD
     - STAGE=dev
     - PORT=9090
     - db_host=congress_postgres:5432
     - db_user=parser
     - db_pass=parser
     - db_table=us_code_2025
+=======
+    - STAGE=${STAGE}
+    - PORT=${PORT}
+    - db_host=${DB_HOST}
+    - db_user=${DB_USER}
+    - db_pass=${DB_PASS}
+    - db_table=${DB_TABLE}
+>>>>>>> local/db
     build:
       context: ../backend
       dockerfile: .docker/Dockerfile
     volumes:
     - ../backend:/usr/src/app/
+<<<<<<< HEAD
     ports:
     - "9090:9090"
+=======
+    - ../.sources:/usr/src/.sources
+    ports:
+    - "9000:9000"
+>>>>>>> local/db
     depends_on:
       - congress_postgres
     networks:
@@ -28,39 +46,65 @@ services:
     - "-m"
     - "congress_api"
   congress_parser_fastapi:
+<<<<<<< HEAD
     image: congress_parser_fastapi:latest
+=======
+>>>>>>> local/db
     container_name: congress_parser_fastapi
     tty: true
     stdin_open: true
     environment:
+<<<<<<< HEAD
     - STAGE=dev
     - PORT=9091
     - db_host=congress_postgres:5432
     - db_user=parser
     - db_pass=parser
     - db_table=us_code_2025
+=======
+    - STAGE=${STAGE}
+    - PORT=${FASTAPI_PORT}
+    - db_host=${DB_HOST}
+    - db_user=${DB_USER}
+    - db_pass=${DB_PASS}
+    - db_table=${DB_TABLE}
+>>>>>>> local/db
     build:
       context: ../backend
       dockerfile: .docker/Dockerfile.fastapi
     volumes:
     - ../backend:/usr/src/app/
     ports:
+<<<<<<< HEAD
     - "9091:8080"
+=======
+    - "9001:8080"
+>>>>>>> local/db
     depends_on:
       - congress_postgres
     networks:
       parser:
   congress_viewer_app:
+<<<<<<< HEAD
     image: congress_viewer_app:latest
+=======
+>>>>>>> local/db
     container_name: congress_viewer_app
     tty: true
     stdin_open: true
     environment:
+<<<<<<< HEAD
     - REACT_APP_API_URL=https://api.congress.dev
     - REACT_APP_API_V2_URL=https://api-v2.congress.dev
     - STAGE=dev
     - CHOKIDAR_USEPOLLING=true
     #- REACT_APP_API_URL=http://localhost:9090
+=======
+    - REACT_APP_API_URL=${REACT_APP_API_URL}
+    - REACT_APP_API_V2_URL=${REACT_APP_API_V2_URL}
+    - STAGE=${STAGE}
+    - CHOKIDAR_USEPOLLING=${CHOKIDAR_USEPOLLING}
+>>>>>>> local/db
     build:
       context: ../frontend
       dockerfile: .docker/Dockerfile
@@ -76,7 +120,10 @@ services:
     command:
     - "start.sh"
   congress_hillstack:
+<<<<<<< HEAD
     image: congress_hillstack:latest
+=======
+>>>>>>> local/db
     container_name: congress_hillstack
     tty: true
     stdin_open: true
@@ -84,11 +131,26 @@ services:
       context: ../hillstack
       dockerfile: .docker/Dockerfile
       args:
+<<<<<<< HEAD
         DATABASE_URL: postgresql://parser:parser@congress_postgres:5432/us_code_2025
         NEXT_PUBLIC_APP_URL: http://localhost:3001
     environment:
     - DATABASE_URL=postgresql://parser:parser@congress_postgres:5432/us_code_2025
     - NEXT_PUBLIC_APP_URL=http://localhost:3001
+=======
+        DATABASE_URL: ${DATABASE_URL}
+        NEXT_PUBLIC_APP_URL: ${NEXT_PUBLIC_APP_URL}
+    environment:
+    - DATABASE_URL=${DATABASE_URL}
+    - NEXT_PUBLIC_APP_URL=${NEXT_PUBLIC_APP_URL}
+    volumes:
+    - ../hillstack/src:/usr/src/app/src
+    - ../hillstack/public:/usr/src/app/public
+    - ../hillstack/prisma:/usr/src/app/prisma
+    - ../hillstack/package.json:/usr/src/app/package.json
+    - ../hillstack/next.config.js:/usr/src/app/next.config.js
+    - ../hillstack/tsconfig.json:/usr/src/app/tsconfig.json
+>>>>>>> local/db
     ports:
     - "3001:3001"
     depends_on:
@@ -101,9 +163,15 @@ services:
     ports:
       - "5432:5432"
     environment:
+<<<<<<< HEAD
       POSTGRES_PASSWORD: parser
       POSTGRES_USER: parser
       POSTGRES_DB: us_code_2025
+=======
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_DB: ${POSTGRES_DB}
+>>>>>>> local/db
     volumes:
       - postgres-volume:/var/lib/postgresql/data
     networks:
@@ -112,16 +180,27 @@ services:
     image: dpage/pgadmin4:latest
     container_name: congress_pgadmin
     environment:
+<<<<<<< HEAD
       PGADMIN_DEFAULT_EMAIL: user@example.com
       PGADMIN_DEFAULT_PASSWORD: your_admin_password
       # Optional: Disable master password for local dev
       PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED: 'False'
+=======
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
+      # Optional: Disable master password for local dev
+      PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED: '${PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED}'
+>>>>>>> local/db
     ports:
       - "5050:80"
     volumes:
       - pgadmin_data:/var/lib/pgadmin
     networks:
       parser:
+<<<<<<< HEAD
+=======
+      
+>>>>>>> local/db
 networks:
   parser:
     driver: bridge

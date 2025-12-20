@@ -13,7 +13,7 @@ from sqlalchemy import (
     MetaData,
 )
 from sqlalchemy.sql import func
-from sqlalchemy.dialects.postgresql import JSONB, ARRAY, BIGINT
+from sqlalchemy.dialects.postgresql import JSONB, ARRAY, BIGINT, TSVECTOR
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 import sqlalchemy as sa
@@ -1060,6 +1060,9 @@ class Legislator(Base):
     facebook = Column(String, index=False, nullable=True)
     youtube = Column(String, index=False, nullable=True)
     instagram = Column(String, index=False, nullable=True)
+    
+    # Full-text search vector
+    search_vector = Column(TSVECTOR, index=False, nullable=True)
 
 
 class LegislationSponsorship(Base):

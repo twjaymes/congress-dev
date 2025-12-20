@@ -41,7 +41,8 @@ def main():
     Compress(app.app)
     session_factory = sessionmaker(bind=db.engine)
     session = flask_scoped_session(session_factory, app.app)
-    app.run(port=9090, debug=os.environ.get("STAGE", "prod").lower() != "prod")
+    port = int(os.environ.get("PORT", 9000))
+    app.run(port=port, debug=os.environ.get("STAGE", "prod").lower() != "prod")
 
 
 if __name__ == "__main__":

@@ -6,6 +6,7 @@ from congress_fastapi.handlers.members import (
     get_member_by_bioguide_id,
     get_member_sponsorships_by_bioguide_id,
     get_members,
+    search_members_fts,
 )
 from congress_fastapi.models.errors import Error
 from congress_fastapi.models.members import (
@@ -104,3 +105,30 @@ async def get_member_sponsorships(
         )
     sponsorships = await get_member_sponsorships_by_bioguide_id(bioguide_id)
     return LegislationSponsorshipList(legislation_sponsorships=sponsorships)
+@router.post("/members/search")
+async def search_members(
+    q: str = Query(..., description="Search query string"),
+    page: int = Query(1, description="Page number for pagination"),
+    page_size: int = Query(20, description="Number of results per page", alias="pageSize"),
+    responses={
+        status.HTTP_200_OK: {
+            "model": MemberSearchResponse,
+            "detail": "Search results",
+        },
+    },
+) -> MemberSearchResponse:
+    """
+    Full-text search for members using PostgreSQL FTS.
+    
+    - **q**: Search query string
+    - **page**: Page number for pagination. Default is 1.
+    - **pageSize**: Number of results per page. Default is 20.
+    
+    Returns:
+        `MemberSearchResponse`: Ranked search results with total count.
+    """
+    member_list, total_results = await search_members_fts(q, page=page, page_size=page_size)
+    return {
+        "members": member_list,
+        "total_results": total_results,
+    }

@@ -3,13 +3,36 @@
 frontend/yarn-error.log
 .vscode
 .docker/docker-compose.local.yml
-backend/venv/
-venv/
+
 
 .resources/
 *.backup
 import.sh
 
-.DS_Store.venv/
+.DS_Store
+
 logs/
 .dev/
+venv/
+.venv/
+**/venv/
+**/.venv/
+
+.resources/
+*.backup
+#import.sh
+
+.DS_Store
+
+# Logs directory - track structure but ignore log files
+logs/*.log
+logs/**/*.log
+
+.dev/downloads
+
+.sources/
+**/.sources/
+
+
+logs
+

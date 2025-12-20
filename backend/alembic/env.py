@@ -71,6 +71,12 @@ def run_migrations_online() -> None:
     and associate a connection with the context.
 
     """
+    # Import DATABASE_URI from billparser to use environment variables
+    from billparser.db.handler import DATABASE_URI
+    
+    # Override the config with the DATABASE_URI from environment
+    config.set_main_option("sqlalchemy.url", DATABASE_URI)
+    
     connectable = engine_from_config(
         config.get_section(config.config_ini_section, {}),
         prefix="sqlalchemy.",
